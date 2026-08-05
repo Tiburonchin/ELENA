@@ -480,7 +480,7 @@
                     <div class="food-item" data-food="brunch">🥐 brunch</div>
                 </div>
                 <!-- Opción secreta -->
-                <div class="food-item secret-item" data-food="a ti jajaja">😏 yo jajaja</div>
+                <div class="food-item secret-item" data-food="yo jajaja">😏 yo jajaja</div>
                 
                 <button class="btn btn-primary" id="btn-next-3">listo &rarr;</button>
             </div>
@@ -715,7 +715,7 @@
                     const icon = item.textContent.split(' ')[0]; 
                     
                     if (item.classList.contains('selected')) {
-                        if (food === "a ti jajaja") {
+                        if (food === "yo jajaja") {
                             alert("es broma, pero si quieres no es broma jasjdasj 🫣");
                         }
                         selectedFoods.push({name: food, icon: icon});
