@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!el) return;
             
             if (isMobile) {
-                const stickerSize = 80;
+                const stickerSize = 105;
                 document.body.appendChild(el); 
                 el.style.position = 'fixed';
                 el.style.right = 'auto';
