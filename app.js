@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const padding = 10;
         const appContainer = document.querySelector('.app-container');
         
-        stickerSelectors.forEach(sel => {
+        stickerSelectors.forEach((sel, index) => {
             const el = document.querySelector(sel);
             if (!el) return;
             
@@ -61,7 +61,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 while (!validPos && attempts < 100) {
                     x = padding + Math.random() * (window.innerWidth - stickerSize - padding * 2);
-                    y = padding + Math.random() * (window.innerHeight - stickerSize - padding * 2);
+                    
+                    // Distribuir uniformemente arriba y abajo
+                    if (index % 2 === 0 && cardRect.top > stickerSize + padding) {
+                        y = padding + Math.random() * Math.max(0, cardRect.top - stickerSize - padding * 2);
+                    } else if (index % 2 !== 0 && (window.innerHeight - cardRect.bottom) > stickerSize + padding) {
+                        y = cardRect.bottom + padding + Math.random() * Math.max(0, window.innerHeight - cardRect.bottom - stickerSize - padding * 2);
+                    } else {
+                        y = padding + Math.random() * (window.innerHeight - stickerSize - padding * 2);
+                    }
                     
                     // Evitar superposición con la tarjeta
                     const collidesX = (x + stickerSize > cardRect.left - padding) && (x < cardRect.right + padding);
@@ -75,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (!validPos) {
                     x = padding + Math.random() * (window.innerWidth - stickerSize - padding * 2);
-                    y = Math.random() > 0.5 ? padding : window.innerHeight - stickerSize - padding;
+                    y = index % 2 === 0 ? padding : window.innerHeight - stickerSize - padding;
                 }
                 
                 gsap.set(el, { left: x, top: y });
