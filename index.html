@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitación Especial</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome para los iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Stickers (imágenes en la carpeta img) -->
+        <img src="img/img1.jpeg" alt="Sticker 1" class="sticker sticker-1">
+        <img src="img/img2.jpeg" alt="Sticker 2" class="sticker sticker-2">
+        <img src="img/img3.jpeg" alt="Sticker 3" class="sticker sticker-3">
+        <img src="img/img4.jpeg" alt="Sticker 4" class="sticker sticker-4">
+        <img src="img/img5.jpeg" alt="Sticker 5" class="sticker sticker-5">
+        <img src="img/img6.jpeg" alt="Sticker 6" class="sticker sticker-6">
+        <img src="img/img7.jpeg" alt="Sticker 7" class="sticker sticker-7">
+        <img src="img/img8.jpeg" alt="Sticker 8" class="sticker sticker-8">
+
+        <div class="card">
+            <!-- Paso 1 -->
+            <div class="step step-1 active">
+                <div class="badge">PREGUNTA SERIA</div>
+                <h1>¿Te gustaría salir el viernes al cine conmigo?</h1>
+                <p>Sí o no</p>
+                <div class="buttons">
+                    <button class="btn btn-no" id="btn-no">No</button>
+                    <button class="btn btn-yes" id="btn-yes">Sí</button>
+                    <div class="tooltip" id="tooltip-no">es una situación de sí o sí xd</div>
+                </div>
+                <p class="hint">jaja no, inténtalo de nuevo</p>
+            </div>
+
+            <!-- Paso 1.5 -->
+            <div class="step step-1-5">
+                <div class="badge">MOMENTO EMOTIVO</div>
+                <h1>espera... ¿dijiste que sí? 🥺</h1>
+                <p>no me lo creo, mira este gatito</p>
+                <button class="btn btn-primary" id="btn-next-1">sí, dije que sí &rarr;</button>
+            </div>
+
+            <!-- Paso 2 -->
+            <div class="step step-2">
+                <div class="badge">PASO 2</div>
+                <h1>¿Cuándo estás libre?</h1>
+                <p>elige el día y la hora</p>
+                <div class="floating-msg">💡 viernes a las 3:30, porfis jsjsj o otro dia que se te acomode jsjsjs elige nuse wuaaaaaaa</div>
+                <div class="form-group">
+                    <label>día</label>
+                    <input type="date" id="date-input">
+                </div>
+                <div class="form-group">
+                    <label>hora</label>
+                    <input type="time" id="time-input" value="19:00">
+                </div>
+                <button class="btn btn-primary" id="btn-next-2">siguiente &rarr;</button>
+            </div>
+
+            <!-- Paso Película -->
+            <div class="step step-movie">
+                <div class="badge">CARTELERA</div>
+                <h1>¿Qué película vemos?</h1>
+                <p>elige sabiamente</p>
+                <div class="food-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom: 10px;">
+                    <div class="movie-item" data-movie="Minions">🍌 Minions</div>
+                    <div class="movie-item" data-movie="Odisea">🚀 Odisea</div>
+                    <div class="movie-item" data-movie="Spiderman">🕷️ Spiderman</div>
+                </div>
+                <div class="form-group" style="margin-top: 10px;">
+                    <label>Otra película (go terror)</label>
+                    <input type="text" id="custom-movie" placeholder="Escribe aquí (ej. la monja)...">
+                </div>
+                <button class="btn btn-primary" id="btn-next-movie">siguiente &rarr;</button>
+            </div>
+
+            <!-- Paso 3 -->
+            <div class="step step-3">
+                <div class="badge">PASO 3</div>
+                <h1>¿Qué se te antoja?</h1>
+                <p>toca lo que más te guste</p>
+                <div class="food-grid">
+                    <div class="food-item" data-food="pizza">🍕 pizza</div>
+                    <div class="food-item" data-food="popeyes">🍗 popeyes</div>
+                    <div class="food-item" data-food="tacos">🌮 tacos</div>
+                    <div class="food-item" data-food="burger">🍔 burger</div>
+                    <div class="food-item" data-food="koreanito">🥢 koreanito</div>
+                    <div class="food-item" data-food="snacks y drinks">🍿 snacks y drinks</div>
+                    <div class="food-item" data-food="postre">🍦 postre</div>
+                    <div class="food-item" data-food="café">☕ café</div>
+                    <div class="food-item" data-food="brunch">🥐 brunch</div>
+                </div>
+                <!-- Opción secreta -->
+                <div class="food-item secret-item" data-food="a ti jajaja">😏 yo jajaja</div>
+                
+                <button class="btn btn-primary" id="btn-next-3">listo &rarr;</button>
+            </div>
+
+            <!-- Paso 4 (Final) -->
+            <div class="step step-4">
+                <div class="badge">CONFIRMADO</div>
+                <h1>¡Nos vemos! 🎉</h1>
+                <h2 id="final-time">7:00 pm</h2>
+                
+                <div class="animation-container">
+                    <div class="road"></div>
+                    <div class="car">🚗</div>
+                    <div class="sun">☀️</div>
+                </div>
+
+                <p>Te espero a las <span id="text-time">7:00 pm</span>. Paso por ti en mi coche 🚗✨</p>
+                
+                <div class="summary-tags">
+                    <div class="tag" id="tag-date"><i class="far fa-calendar"></i> <span id="summary-date">miércoles, 22 de julio</span></div>
+                    <div class="tag" id="tag-movie"><i class="fas fa-film"></i> <span id="summary-movie">Minions</span></div>
+                    <div id="summary-foods" class="summary-foods">
+                        <!-- Aquí van los tags de comida -->
+                    </div>
+                </div>
+                
+                <p style="margin-top: 20px; font-weight: 800; color: #1a1a24; font-size: 1rem;">📸 toma captura y mandameloooooo jsjsj</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

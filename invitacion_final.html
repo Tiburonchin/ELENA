@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Invitación Especial</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            background-color: #d4af37;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            /* Prevents pull-to-refresh on mobile */
+            overscroll-behavior-y: none;
+        }
+
+        .app-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            /* Adjust height for mobile devices to prevent cutoff */
+            height: 100svh;
+            max-height: 750px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .sticker {
+            position: absolute;
+            max-width: 110px;
+            max-height: 110px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            z-index: 10;
+            pointer-events: none;
+            opacity: 0;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3));
+        }
+
+        .sticker-1 { top: 8%; left: -8%; transform: rotate(-15deg); }
+        .sticker-2 { bottom: 15%; right: -12%; transform: rotate(10deg); }
+        .sticker-3 { top: 20%; right: -5%; transform: rotate(15deg); }
+        .sticker-4 { bottom: 10%; left: -5%; transform: rotate(-10deg); }
+        .sticker-5 { top: 55%; right: -25%; transform: rotate(15deg); }
+        .sticker-6 { bottom: 35%; right: -8%; transform: rotate(12deg); }
+        .sticker-7 { top: -5%; left: 10%; transform: rotate(-5deg); }
+        .sticker-8 { top: 5%; right: -10%; transform: rotate(15deg); }
+
+        .card {
+            background-color: #f1f8f6;
+            width: 92%;
+            border-radius: 24px;
+            padding: 25px 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3), 
+                        inset 0 -5px 10px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+            border: 3px solid #1a1a24;
+            border-bottom-width: 8px;
+            border-right-width: 5px;
+            min-height: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        .step.active {
+            visibility: visible;
+            opacity: 1;
+            position: relative;
+        }
+
+        .badge {
+            background-color: #1a1a24;
+            color: #d4af37;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            border: 2px solid #1a1a24;
+            margin-bottom: 20px;
+            box-shadow: 2px 2px 0 #1a1a24;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            color: #1a1a24;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        p {
+            color: #6b7280;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            position: relative;
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: 2px solid #1a1a24;
+            transition: transform 0.1s;
+            box-shadow: 3px 3px 0 #1a1a24;
+            position: relative;
+            flex: 1;
+            max-width: 140px;
+        }
+
+        .btn:active {
+            transform: translate(3px, 3px);
+            box-shadow: 0px 0px 0 #1a1a24;
+        }
+
+        .btn-no {
+            background-color: #f3f4f6;
+            color: #1a1a24;
+        }
+
+        .btn-yes, .btn-primary {
+            background-color: #1a1a24;
+            color: #d4af37;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        .btn-primary {
+            margin-top: auto;
+            flex: none;
+        }
+
+        .tooltip {
+            position: absolute;
+            bottom: -40px;
+            left: 5%;
+            background-color: #1a1a24;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            opacity: 0;
+            pointer-events: none;
+            font-weight: 600;
+            z-index: 10005;
+            border: 1px solid white;
+        }
+
+        .hint {
+            font-size: 0.7rem;
+            color: #9ca3af;
+            margin-top: auto;
+            opacity: 0;
+        }
+
+        /* Floating Message */
+        .floating-msg {
+            background-color: #fde68a;
+            color: #92400e;
+            padding: 8px 15px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            border: 2px solid #1a1a24;
+            box-shadow: 2px 2px 0 #1a1a24;
+            animation: floatMsg 2s ease-in-out infinite;
+        }
+
+        @keyframes floatMsg {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Formularios Paso 2 */
+        .form-group {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #4b5563;
+            margin-bottom: 5px;
+            margin-left: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 2px solid #1a1a24;
+            font-size: 1rem;
+            font-family: 'Nunito', sans-serif;
+            outline: none;
+            box-shadow: 3px 3px 0 #1a1a24;
+            background-color: #f1f8f6;
+        }
+
+        /* Cuadrícula Comida Paso 3 */
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .food-item, .movie-item {
+            background-color: #f1f8f6;
+            border: 2px solid #1a1a24;
+            border-radius: 12px;
+            padding: 12px 4px;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 2px 2px 0 #1a1a24;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .food-item.selected, .movie-item.selected {
+            background-color: #1a1a24;
+            color: #d4af37;
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0 #1a1a24;
+        }
+
+        /* Opción Oculta */
+        .secret-item {
+            position: absolute;
+            bottom: 25px;
+            right: 15px;
+            opacity: 0.08;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            font-size: 0.6rem;
+            z-index: 100;
+        }
+        .secret-item:hover, .secret-item.selected {
+            opacity: 1;
+            transform: scale(1.2);
+            background-color: #1a1a24;
+            color: #d4af37;
+            border: 2px solid #1a1a24;
+        }
+
+        /* Final Paso 4 */
+        .step-4 h2 {
+            color: #1a1a24;
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .animation-container {
+            width: 100%;
+            height: 80px;
+            background-color: #a7f3d0;
+            border: 2px solid #1a1a24;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .road {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 20px;
+            background-color: #4b5563;
+            border-top: 2px solid #1a1a24;
+        }
+
+        .road::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 200%;
+            height: 2px;
+            background: repeating-linear-gradient(90deg, transparent, transparent 10px, #fde68a 10px, #fde68a 20px);
+            animation: moveRoad 1s linear infinite;
+        }
+
+        .car {
+            position: absolute;
+            bottom: 15px;
+            left: 20px;
+            font-size: 2rem;
+            animation: bounceCar 0.5s ease-in-out infinite alternate;
+        }
+
+        .sun {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            animation: spinSun 10s linear infinite;
+        }
+
+        @keyframes moveRoad {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50px); }
+        }
+
+        @keyframes bounceCar {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-3px); }
+        }
+
+        @keyframes spinSun {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .summary-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .tag {
+            background-color: white;
+            border: 2px solid #1a1a24;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 2px 2px 0 #1a1a24;
+        }
+        .summary-foods {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Stickers -->
+        <img src="img/img1.jpeg" alt="Sticker 1" class="sticker sticker-1">
+        <img src="img/img2.jpeg" alt="Sticker 2" class="sticker sticker-2">
+        <img src="img/img3.jpeg" alt="Sticker 3" class="sticker sticker-3">
+        <img src="img/img4.jpeg" alt="Sticker 4" class="sticker sticker-4">
+        <img src="img/img5.jpeg" alt="Sticker 5" class="sticker sticker-5">
+        <img src="img/img6.jpeg" alt="Sticker 6" class="sticker sticker-6">
+        <img src="img/img7.jpeg" alt="Sticker 7" class="sticker sticker-7">
+        <img src="img/img8.jpeg" alt="Sticker 8" class="sticker sticker-8">
+
+        <div class="card">
+            <!-- Paso 1 -->
+            <div class="step step-1 active">
+                <div class="badge">PREGUNTA SERIA</div>
+                <h1>¿Te gustaría salir el viernes al cine conmigo?</h1>
+                <p>Sí o no</p>
+                <div class="buttons">
+                    <button class="btn btn-no" id="btn-no">No</button>
+                    <button class="btn btn-yes" id="btn-yes">Sí</button>
+                    <div class="tooltip" id="tooltip-no">es una situación de sí o sí xd</div>
+                </div>
+                <p class="hint">jaja no, inténtalo de nuevo</p>
+            </div>
+
+            <!-- Paso 1.5 -->
+            <div class="step step-1-5">
+                <div class="badge">MOMENTO EMOTIVO</div>
+                <h1>espera... ¿dijiste que sí? 🥺</h1>
+                <p>no me lo creo, mira este gatito</p>
+                <button class="btn btn-primary" id="btn-next-1">sí, dije que sí &rarr;</button>
+            </div>
+
+            <!-- Paso 2 -->
+            <div class="step step-2">
+                <div class="badge">PASO 2</div>
+                <h1>¿Cuándo estás libre?</h1>
+                <p>elige el día y la hora</p>
+                <div class="floating-msg">💡 viernes a las 3:30, porfis jsjsj o otro dia que se te acomode jsjsjs elige nuse wuaaaaaaa</div>
+                <div class="form-group">
+                    <label>día</label>
+                    <input type="date" id="date-input">
+                </div>
+                <div class="form-group">
+                    <label>hora</label>
+                    <input type="time" id="time-input" value="19:00">
+                </div>
+                <button class="btn btn-primary" id="btn-next-2">siguiente &rarr;</button>
+            </div>
+
+            <!-- Paso Película -->
+            <div class="step step-movie">
+                <div class="badge">CARTELERA</div>
+                <h1>¿Qué película vemos?</h1>
+                <p>elige sabiamente</p>
+                <div class="food-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom: 10px;">
+                    <div class="movie-item" data-movie="Minions">🍌 Minions</div>
+                    <div class="movie-item" data-movie="Odisea">🚀 Odisea</div>
+                    <div class="movie-item" data-movie="Spiderman">🕷️ Spiderman</div>
+                </div>
+                <div class="form-group" style="margin-top: 10px;">
+                    <label>Otra película (go terror)</label>
+                    <input type="text" id="custom-movie" placeholder="Escribe aquí (ej. la monja)...">
+                </div>
+                <button class="btn btn-primary" id="btn-next-movie">siguiente &rarr;</button>
+            </div>
+
+            <!-- Paso 3 -->
+            <div class="step step-3">
+                <div class="badge">PASO 3</div>
+                <h1>¿Qué se te antoja?</h1>
+                <p>toca lo que más te guste</p>
+                <div class="food-grid">
+                    <div class="food-item" data-food="pizza">🍕 pizza</div>
+                    <div class="food-item" data-food="popeyes">🍗 popeyes</div>
+                    <div class="food-item" data-food="tacos">🌮 tacos</div>
+                    <div class="food-item" data-food="burger">🍔 burger</div>
+                    <div class="food-item" data-food="koreanito">🥢 koreanito</div>
+                    <div class="food-item" data-food="snacks y drinks">🍿 snacks y drinks</div>
+                    <div class="food-item" data-food="postre">🍦 postre</div>
+                    <div class="food-item" data-food="café">☕ café</div>
+                    <div class="food-item" data-food="brunch">🥐 brunch</div>
+                </div>
+                <!-- Opción secreta -->
+                <div class="food-item secret-item" data-food="a ti jajaja">😏 yo jajaja</div>
+                
+                <button class="btn btn-primary" id="btn-next-3">listo &rarr;</button>
+            </div>
+
+            <!-- Paso 4 (Final) -->
+            <div class="step step-4">
+                <div class="badge">CONFIRMADO</div>
+                <h1>¡Nos vemos! 🎉</h1>
+                <h2 id="final-time">7:00 pm</h2>
+                
+                <div class="animation-container">
+                    <div class="road"></div>
+                    <div class="car">🚗</div>
+                    <div class="sun">☀️</div>
+                </div>
+
+                <p>Te espero a las <span id="text-time">7:00 pm</span>. Paso por ti en mi coche 🚗✨</p>
+                
+                <div class="summary-tags">
+                    <div class="tag" id="tag-date"><i class="far fa-calendar"></i> <span id="summary-date">miércoles, 22 de julio</span></div>
+                    <div class="tag" id="tag-movie"><i class="fas fa-film"></i> <span id="summary-movie">Minions</span></div>
+                    <div id="summary-foods" class="summary-foods">
+                        <!-- Aquí van los tags de comida -->
+                    </div>
+                </div>
+                
+                <p style="margin-top: 20px; font-weight: 800; color: #1a1a24; font-size: 1rem; text-align: center;">📸 toma captura y mandameloooooo jsjsj</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referencias a los elementos
+            const btnNo = document.getElementById('btn-no');
+            const btnYes = document.getElementById('btn-yes');
+            const tooltipNo = document.getElementById('tooltip-no');
+            const hint = document.querySelector('.hint');
+            
+            const step1 = document.querySelector('.step-1');
+            const step1_5 = document.querySelector('.step-1-5');
+            const step2 = document.querySelector('.step-2');
+            const step3 = document.querySelector('.step-3');
+            const stepMovie = document.querySelector('.step-movie');
+            const step4 = document.querySelector('.step-4');
+
+            const btnNext1 = document.getElementById('btn-next-1');
+            const btnNext2 = document.getElementById('btn-next-2');
+            const btnNextMovie = document.getElementById('btn-next-movie');
+            const btnNext3 = document.getElementById('btn-next-3');
+
+            const foodItems = document.querySelectorAll('.food-item');
+            const movieItems = document.querySelectorAll('.movie-item');
+            const customMovieInput = document.getElementById('custom-movie');
+            const dateInput = document.getElementById('date-input');
+            const timeInput = document.getElementById('time-input');
+            
+            const stickers = document.querySelectorAll('.sticker');
+
+            // Datos
+            let selectedFoods = [];
+            let selectedMovie = "";
+            
+            // Configurar fecha mínima
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.min = today;
+            dateInput.value = today;
+
+            // Animación de inicio de la tarjeta
+            gsap.from(".card", {
+                y: 100,
+                opacity: 0,
+                duration: 1,
+                ease: "back.out(1.5)"
+            });
+            
+            // Mostrar primeros stickers
+            gsap.to([".sticker-1", ".sticker-5"], {
+                opacity: 1,
+                scale: 1,
+                duration: 0.5,
+                delay: 0.5,
+                stagger: 0.2,
+                ease: "back.out(2)"
+            });
+
+            // Paso 1: El botón "No" huye del cursor
+            let hoverCount = 0;
+            
+            function moveBtnNo() {
+                hoverCount++;
+                
+                if (hoverCount === 1) {
+                    const rectNo = btnNo.getBoundingClientRect();
+                    const rectYes = btnYes.getBoundingClientRect();
+                    
+                    document.body.appendChild(btnNo);
+                    btnNo.style.position = 'fixed';
+                    btnNo.style.left = rectNo.left + 'px';
+                    btnNo.style.top = rectNo.top + 'px';
+                    btnNo.style.zIndex = '9999';
+                    gsap.set(btnNo, { x: 0, y: 0, margin: 0 });
+                    
+                    document.body.appendChild(btnYes);
+                    btnYes.style.position = 'fixed';
+                    btnYes.style.left = rectYes.left + 'px';
+                    btnYes.style.top = rectYes.top + 'px';
+                    btnYes.style.width = rectYes.width + 'px';
+                    btnYes.style.zIndex = '10000';
+                    gsap.set(btnYes, { margin: 0 });
+                    
+                    gsap.to(tooltipNo, { opacity: 1, y: -10, duration: 0.3 });
+                }
+                
+                const maxX = window.innerWidth - btnNo.offsetWidth - 20;
+                const maxY = window.innerHeight - btnNo.offsetHeight - 20;
+                
+                const randomX = Math.max(20, Math.floor(Math.random() * maxX));
+                const randomY = Math.max(20, Math.floor(Math.random() * maxY));
+
+                gsap.to(btnNo, {
+                    left: randomX,
+                    top: randomY,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+
+                gsap.to(btnYes, {
+                    scale: 1 + (hoverCount * 0.15),
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+
+                if (hoverCount === 3) {
+                    gsap.to(hint, { opacity: 1, duration: 0.3 });
+                }
+            }
+
+            // Support for both mouse and touch interfaces
+            btnNo.addEventListener('mouseenter', moveBtnNo);
+            btnNo.addEventListener('touchstart', (e) => { e.preventDefault(); moveBtnNo(); });
+            btnNo.addEventListener('click', (e) => { e.preventDefault(); moveBtnNo(); });
+
+            function goToStep(currentStep, nextStep, newStickers = []) {
+                gsap.to(currentStep, {
+                    opacity: 0,
+                    x: -50,
+                    duration: 0.4,
+                    onComplete: () => {
+                        currentStep.classList.remove('active');
+                        nextStep.classList.add('active');
+                        
+                        gsap.to(stickers, { opacity: 0, scale: 0.8, duration: 0.3 });
+                        
+                        if (newStickers.length > 0) {
+                            gsap.to(newStickers, {
+                                opacity: 1,
+                                scale: 1,
+                                duration: 0.5,
+                                delay: 0.2,
+                                stagger: 0.1,
+                                ease: "back.out(2)"
+                            });
+                        }
+
+                        gsap.fromTo(nextStep, 
+                            { opacity: 0, x: 50 },
+                            { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }
+                        );
+                    }
+                });
+            }
+
+            btnYes.addEventListener('click', () => {
+                if (btnYes.parentNode === document.body) gsap.to(btnYes, { opacity: 0, duration: 0.4, onComplete: () => btnYes.remove() });
+                if (btnNo.parentNode === document.body) gsap.to(btnNo, { opacity: 0, duration: 0.4, onComplete: () => btnNo.remove() });
+                
+                goToStep(step1, step1_5, ['.sticker-2']);
+            });
+
+            btnNext1.addEventListener('click', () => {
+                alert('espero mi salchipapa, gracias jjajajaja');
+                goToStep(step1_5, step2, ['.sticker-3']);
+            });
+
+            btnNext2.addEventListener('click', () => {
+                if (!dateInput.value || !timeInput.value) {
+                    gsap.to(btnNext2, { x: 10, duration: 0.1, yoyo: true, repeat: 3 });
+                    return;
+                }
+                goToStep(step2, stepMovie, ['.sticker-6', '.sticker-7']);
+            });
+
+            movieItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    movieItems.forEach(m => m.classList.remove('selected'));
+                    item.classList.add('selected');
+                    selectedMovie = item.getAttribute('data-movie');
+                    customMovieInput.value = '';
+                    
+                    gsap.fromTo(item, 
+                        { scale: 0.9 },
+                        { scale: 1, duration: 0.3, ease: "back.out(3)" }
+                    );
+                });
+            });
+
+            customMovieInput.addEventListener('input', () => {
+                if (customMovieInput.value.trim() !== '') {
+                    movieItems.forEach(m => m.classList.remove('selected'));
+                    selectedMovie = customMovieInput.value;
+                }
+            });
+
+            btnNextMovie.addEventListener('click', () => {
+                if (!selectedMovie || selectedMovie.trim() === '') {
+                     gsap.to(btnNextMovie, { x: 10, duration: 0.1, yoyo: true, repeat: 3 });
+                     return;
+                }
+                if (customMovieInput.value.trim() !== '' && selectedMovie === customMovieInput.value) {
+                    alert('escríbelo por wasa mejor jaja');
+                }
+                goToStep(stepMovie, step3, ['.sticker-8', '.sticker-4']);
+            });
+
+            foodItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    item.classList.toggle('selected');
+                    const food = item.getAttribute('data-food');
+                    const icon = item.textContent.split(' ')[0]; 
+                    
+                    if (item.classList.contains('selected')) {
+                        if (food === "a ti jajaja") {
+                            alert("es broma, pero si quieres no es broma jasjdasj 🫣");
+                        }
+                        selectedFoods.push({name: food, icon: icon});
+                        gsap.fromTo(item, 
+                            { scale: 0.9 },
+                            { scale: 1, duration: 0.3, ease: "back.out(3)" }
+                        );
+                    } else {
+                        selectedFoods = selectedFoods.filter(f => f.name !== food);
+                    }
+                });
+            });
+
+            btnNext3.addEventListener('click', () => {
+                if (selectedFoods.length === 0) {
+                     gsap.to(btnNext3, { x: 10, duration: 0.1, yoyo: true, repeat: 3 });
+                     return;
+                }
+
+                const dateObj = new Date(dateInput.value + 'T' + timeInput.value);
+                const options = { weekday: 'long', month: 'long', day: 'numeric' };
+                const dateString = dateObj.toLocaleDateString('es-ES', options);
+                
+                let hours = dateObj.getHours();
+                let minutes = dateObj.getMinutes();
+                const ampm = hours >= 12 ? 'pm' : 'am';
+                hours = hours % 12;
+                hours = hours ? hours : 12; 
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+                const timeString = hours + ':' + minutes + ' ' + ampm;
+
+                document.getElementById('final-time').textContent = timeString;
+                document.getElementById('text-time').textContent = timeString;
+                document.getElementById('summary-date').textContent = dateString;
+
+                let movieDisplay = selectedMovie.startsWith('Minions') || selectedMovie.startsWith('Spider') ? selectedMovie : `🍿 ${selectedMovie}`;
+                document.getElementById('summary-movie').textContent = movieDisplay;
+
+                const summaryFoodsContainer = document.getElementById('summary-foods');
+                summaryFoodsContainer.innerHTML = '';
+                selectedFoods.forEach(food => {
+                    const tag = document.createElement('div');
+                    tag.className = 'tag';
+                    tag.innerHTML = `${food.icon} ${food.name}`;
+                    summaryFoodsContainer.appendChild(tag);
+                });
+
+                goToStep(step3, step4, ['.sticker-5', '.sticker-8']);
+                createConfetti();
+            });
+
+            function createConfetti() {
+                const colors = ['#d4af37', '#1a1a24', '#f1f8f6', '#ffffff'];
+                for(let i=0; i<50; i++) {
+                    const confetto = document.createElement('div');
+                    confetto.style.position = 'absolute';
+                    confetto.style.width = '10px';
+                    confetto.style.height = '10px';
+                    confetto.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetto.style.top = '-10px';
+                    confetto.style.left = Math.random() * 100 + '%';
+                    confetto.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    confetto.style.zIndex = 100;
+                    document.querySelector('.app-container').appendChild(confetto);
+
+                    gsap.to(confetto, {
+                        y: 600,
+                        x: (Math.random() - 0.5) * 200,
+                        rotation: Math.random() * 360,
+                        duration: Math.random() * 2 + 1,
+                        ease: "power1.out",
+                        onComplete: () => confetto.remove()
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
