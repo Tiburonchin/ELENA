@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (item.classList.contains('selected')) {
                 // Si elige la opción oculta
                 if (food === "yo jajaja") {
-                    alert("es broma, pero si quieres no es broma jasjdasj 🫣");
+                    alert("es broma, pero si quieres no es broma 🫣");
                 }
 
                 selectedFoods.push({name: food, icon: icon});
