@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btnNext1.addEventListener('click', () => {
         // Al ir al Paso 2
-        alert('espero mi salchipapa, gracias jjajajaja');
+        alert('espero mi salchipapa 🍟');
         goToStep(step1_5, step2, ['.sticker-3']);
     });
 
