@@ -576,43 +576,50 @@
             function positionStickers(stickerSelectors) {
                 const cardRect = document.querySelector('.card').getBoundingClientRect();
                 const isMobile = window.innerWidth <= 500;
-                const stickerSize = isMobile ? 80 : 110;
                 const padding = 10;
+                const appContainer = document.querySelector('.app-container');
                 
                 stickerSelectors.forEach(sel => {
                     const el = document.querySelector(sel);
                     if (!el) return;
                     
-                    document.body.appendChild(el); 
-                    el.style.position = 'fixed';
-                    el.style.right = 'auto';
-                    el.style.bottom = 'auto';
-                    el.style.maxWidth = stickerSize + 'px';
-                    el.style.maxHeight = stickerSize + 'px';
-                    
-                    let validPos = false;
-                    let x, y;
-                    let attempts = 0;
-                    
-                    while (!validPos && attempts < 100) {
-                        x = padding + Math.random() * (window.innerWidth - stickerSize - padding * 2);
-                        y = padding + Math.random() * (window.innerHeight - stickerSize - padding * 2);
+                    if (isMobile) {
+                        const stickerSize = 80;
+                        document.body.appendChild(el); 
+                        el.style.position = 'fixed';
+                        el.style.right = 'auto';
+                        el.style.bottom = 'auto';
+                        el.style.maxWidth = stickerSize + 'px';
+                        el.style.maxHeight = stickerSize + 'px';
                         
-                        const collidesX = (x + stickerSize > cardRect.left - padding) && (x < cardRect.right + padding);
-                        const collidesY = (y + stickerSize > cardRect.top - padding) && (y < cardRect.bottom + padding);
+                        let validPos = false;
+                        let x, y;
+                        let attempts = 0;
                         
-                        if (!(collidesX && collidesY)) {
-                            validPos = true;
+                        while (!validPos && attempts < 100) {
+                            x = padding + Math.random() * (window.innerWidth - stickerSize - padding * 2);
+                            y = padding + Math.random() * (window.innerHeight - stickerSize - padding * 2);
+                            
+                            const collidesX = (x + stickerSize > cardRect.left - padding) && (x < cardRect.right + padding);
+                            const collidesY = (y + stickerSize > cardRect.top - padding) && (y < cardRect.bottom + padding);
+                            
+                            if (!(collidesX && collidesY)) {
+                                validPos = true;
+                            }
+                            attempts++;
                         }
-                        attempts++;
+                        
+                        if (!validPos) {
+                            x = padding + Math.random() * (window.innerWidth - stickerSize - padding * 2);
+                            y = Math.random() > 0.5 ? padding : window.innerHeight - stickerSize - padding;
+                        }
+                        
+                        gsap.set(el, { left: x, top: y });
+                    } else {
+                        // Escritorio: volver a la caja principal y dejar que CSS decida
+                        appContainer.appendChild(el);
+                        gsap.set(el, { clearProps: "left,top,right,bottom,position,maxWidth,maxHeight" });
                     }
-                    
-                    if (!validPos) {
-                        x = padding + Math.random() * (window.innerWidth - stickerSize - padding * 2);
-                        y = Math.random() > 0.5 ? padding : window.innerHeight - stickerSize - padding;
-                    }
-                    
-                    gsap.set(el, { left: x, top: y });
                 });
             }
 
