@@ -80,6 +80,14 @@ document.addEventListener('DOMContentLoaded', () => {
             btnYes.style.zIndex = '10000';
             gsap.set(btnYes, { margin: 0 });
             
+            // Extraer y fijar el tooltip
+            const rectTooltip = tooltipNo.getBoundingClientRect();
+            document.body.appendChild(tooltipNo);
+            tooltipNo.style.position = 'fixed';
+            tooltipNo.style.left = rectTooltip.left + 'px';
+            tooltipNo.style.top = rectTooltip.top + 'px';
+            tooltipNo.style.zIndex = '10005';
+            
             gsap.to(tooltipNo, { opacity: 1, y: -10, duration: 0.3 });
         }
         
@@ -100,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Hace crecer el botón Sí progresivamente
         gsap.to(btnYes, {
-            scale: 1 + (hoverCount * 0.15),
+            scale: 1 + (hoverCount * 0.4),
             duration: 0.3,
             ease: "power2.out"
         });
