@@ -34,6 +34,59 @@ document.addEventListener('DOMContentLoaded', () => {
     dateInput.min = today;
     dateInput.value = today;
 
+    let currentStickers = [".sticker-1", ".sticker-5"];
+
+    function positionStickers(stickerSelectors) {
+        const cardRect = document.querySelector('.card').getBoundingClientRect();
+        const isMobile = window.innerWidth <= 500;
+        const stickerSize = isMobile ? 80 : 110;
+        const padding = 10;
+        
+        stickerSelectors.forEach(sel => {
+            const el = document.querySelector(sel);
+            if (!el) return;
+            
+            document.body.appendChild(el); 
+            el.style.position = 'fixed';
+            el.style.right = 'auto';
+            el.style.bottom = 'auto';
+            el.style.maxWidth = stickerSize + 'px';
+            el.style.maxHeight = stickerSize + 'px';
+            
+            let validPos = false;
+            let x, y;
+            let attempts = 0;
+            
+            while (!validPos && attempts < 100) {
+                x = padding + Math.random() * (window.innerWidth - stickerSize - padding * 2);
+                y = padding + Math.random() * (window.innerHeight - stickerSize - padding * 2);
+                
+                // Evitar superposición con la tarjeta
+                const collidesX = (x + stickerSize > cardRect.left - padding) && (x < cardRect.right + padding);
+                const collidesY = (y + stickerSize > cardRect.top - padding) && (y < cardRect.bottom + padding);
+                
+                if (!(collidesX && collidesY)) {
+                    validPos = true;
+                }
+                attempts++;
+            }
+            
+            if (!validPos) {
+                // Si no hay espacio (pantallas muy ajustadas), poner arriba o abajo de forma segura
+                x = padding + Math.random() * (window.innerWidth - stickerSize - padding * 2);
+                y = Math.random() > 0.5 ? padding : window.innerHeight - stickerSize - padding;
+            }
+            
+            gsap.set(el, { left: x, top: y });
+        });
+    }
+
+    window.addEventListener('resize', () => {
+        if (currentStickers.length > 0) {
+            positionStickers(currentStickers);
+        }
+    });
+
     // Animación de inicio de la tarjeta
     gsap.from(".card", {
         y: 100,
@@ -43,7 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Mostrar primeros stickers
-    gsap.to([".sticker-1", ".sticker-5"], {
+    positionStickers(currentStickers);
+    gsap.to(currentStickers, {
         opacity: 1,
         scale: 1,
         duration: 0.5,
@@ -139,6 +193,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Mostrar los nuevos stickers asignados a esta vista
                 if (newStickers.length > 0) {
+                    currentStickers = newStickers;
+                    positionStickers(newStickers);
                     gsap.to(newStickers, {
                         opacity: 1,
                         scale: 1,
